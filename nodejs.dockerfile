@@ -24,15 +24,23 @@ RUN `
 FROM mcr.microsoft.com/${WINDOWSBASEIMAGE}:${WINDOWSIMAGETAG}
 ARG NPMVERSION
 ARG YARNVERSION
+ARG NPM_CONFIG_PREFIX=C:\Tools\Npm-Global
 COPY --from=download C:\Tools\NodeJs C:\Tools\NodeJs
-ENV NPM_CONFIG_PREFIX C:\Tools\Npm-Global
 USER Administrator
-RUN FOR /F "tokens=1,2,* delims= " %A IN ('REG QUERY "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path') DO `
-        @IF /I "%~A"=="Path" `
-            REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "%~A" /t "%~B" /d "%~C;%NPM_CONFIG_PREFIX%;%NPM_CONFIG_PREFIX%\bin;C:\Tools\NodeJs" /f
-RUN ECHO.@ECHO OFF >  C:\Tools\node-extra-install.cmd && `
+RUN ECHO.@ECHO OFF> C:\Tools\path-append-helper.cmd && `
+    ECHO.ECHO.Appending Path variable in HKLM Registry with>> C:\Tools\path-append-helper.cmd && `
+    ECHO.ECHO.;%%%1%%;%%%1%%\bin;%~2;%~2\bin;C:\Tools\NodeJs>> C:\Tools\path-append-helper.cmd && `
+    ECHO.FOR /F "tokens=1,2,* delims= " %%A IN ('REG QUERY "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path') DO (>> C:\Tools\path-append-helper.cmd &&`
+    ECHO.    IF /I "%%~A"=="Path" (>> C:\Tools\path-append-helper.cmd &&`
+    ECHO.        REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "%%~A" /t "%%~B" /d "%%~C;%%%1%%;%%%1%%\bin;%~2;%~2\bin;C:\Tools\NodeJs" /f>> C:\Tools\path-append-helper.cmd &&`
+    ECHO.    )>> C:\Tools\path-append-helper.cmd &&`
+    ECHO.)>> C:\Tools\path-append-helper.cmd &&`
+    CALL C:\Tools\path-append-helper.cmd NPM_CONFIG_PREFIX "%NPM_CONFIG_PREFIX%" && `
+    SETX /M NPM_CONFIG_PREFIX "%NPM_CONFIG_PREFIX%" && `
+    ERASE C:\Tools\path-append-helper.cmd
+RUN ECHO.@ECHO OFF> C:\Tools\node-extra-install.cmd && `
     ECHO.SET NPMINSTALLCOMMAND=npm install --cache "%TEMP%\npm-cache" --global>>  C:\Tools\node-extra-install.cmd && `
-    ECHO.IF /I "%NPMVERSION%"==""  (cmd /C %NPMINSTALLCOMMAND% npm)  ELSE (cmd /C %NPMINSTALLCOMMAND% "npm@%NPMVERSION%")  >>  C:\Tools\node-extra-install.cmd && `
+    ECHO.IF NOT "%NPMVERSION%"=="" (cmd /C %NPMINSTALLCOMMAND% "npm@%NPMVERSION%") >> C:\Tools\node-extra-install.cmd && `
     ECHO.IF /I "%YARNVERSION%"=="" (cmd /C %NPMINSTALLCOMMAND% yarn) ELSE (cmd /C %NPMINSTALLCOMMAND% "yarn@%YARNVERSION%")>>  C:\Tools\node-extra-install.cmd && `
     ECHO.RD /S /Q "%TEMP%\npm-cache">>  C:\Tools\node-extra-install.cmd && `
     ECHO.@ECHO OFF >  C:\Tools\node-setenv.cmd && `
