@@ -25,12 +25,5 @@ ARG NPMVERSION
 ARG YARNVERSION
 COPY --from=download C:\Tools\node-v${NODEVERSION}-win-x64 C:\Tools\node-v${NODEVERSION}-win-x64
 ADD *.cmd C:\Users\Public\Downloads\HelperScripts\
-RUN (`
-        CALL C:\Users\Public\Downloads\HelperScripts\node-path-append.cmd "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" 2> NUL || `
-        CALL C:\Users\Public\Downloads\HelperScripts\node-path-append.cmd "HKCU\Environment"`
-    ) &&`
-    ERASE C:\Users\Public\Downloads\HelperScripts\node-path-append.cmd
-RUN CALL C:\Users\Public\Downloads\HelperScripts\node-extra-install.cmd && `
-    CALL C:\Users\Public\Downloads\HelperScripts\node-extra-setenv.cmd && `
-    ERASE C:\Users\Public\Downloads\HelperScripts\*.cmd && `
-    RD /S /Q C:\Users\Public\Downloads\HelperScripts
+RUN C:\Users\Public\Downloads\HelperScripts\node-pathsetup.cmd
+RUN C:\Users\Public\Downloads\HelperScripts\node-postsetup.cmd
