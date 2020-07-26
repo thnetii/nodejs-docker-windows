@@ -8,7 +8,7 @@ REG QUERY "%~1" /v Path 1> NUL 2> NUL || (
     REG ADD "%~1" /v Path /t REG_EXPAND_SZ /d "" 1> NUL
 ) || GOTO ERRORMESSAGE
 
-SET NODE_PATH_APPEND=;%%APPDATA%%\npm;%%APPDATA%%\npm\bin;C:\Tools\NodeJs
+SET NODE_PATH_APPEND=;%%APPDATA%%\npm;%%APPDATA%%\npm\bin;C:\Tools\node-v%NODEVERSION%-win-x64
 FOR /F "tokens=1,2,* delims= " %%X IN ('REG QUERY "%~1" /v Path') DO (
     IF /I "%%~X"=="Path" (
         ECHO.Appending "%NODE_PATH_APPEND%" to Path value "%%~Z"
