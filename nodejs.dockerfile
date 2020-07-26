@@ -24,12 +24,11 @@ FROM mcr.microsoft.com/${WINDOWSBASEIMAGE}:${WINDOWSIMAGETAG}
 ARG NPMVERSION
 ARG YARNVERSION
 COPY --from=download C:\Tools\NodeJs C:\Tools\NodeJs
-ADD *.cmd C:\HelperScripts\
+ADD *.cmd C:\Tools\HelperScripts\
 RUN (`
-        CALL C:\HelperScripts\node-path-append.cmd "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" 2> NUL || `
-        CALL C:\HelperScripts\node-path-append.cmd "HKCU\Environment"`
+        CALL C:\Tools\HelperScripts\node-path-append.cmd "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" 2> NUL || `
+        CALL C:\Tools\HelperScripts\node-path-append.cmd "HKCU\Environment"`
     ) &&`
-    ERASE C:\HelperScripts\node-path-append.cmd
-RUN CALL C:\HelperScripts\node-extra-install.cmd && `
-    CALL C:\HelperScripts\node-extra-setenv.cmd  && `
-    ERASE C:\HelperScripts\node*.cmd && RD /S /Q C:\HelperScripts
+    ERASE C:\Tools\HelperScripts\node-path-append.cmd
+RUN CALL C:\Tools\HelperScripts\node-extra-install.cmd && `
+    CALL C:\Tools\HelperScripts\node-extra-setenv.cmd
