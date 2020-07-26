@@ -24,11 +24,13 @@ FROM mcr.microsoft.com/${WINDOWSBASEIMAGE}:${WINDOWSIMAGETAG}
 ARG NPMVERSION
 ARG YARNVERSION
 COPY --from=download C:\Tools\NodeJs C:\Tools\NodeJs
-ADD *.cmd C:\Tools\HelperScripts\
+ADD *.cmd C:\Users\Public\Downloads\HelperScripts\
 RUN (`
-        CALL C:\Tools\HelperScripts\node-path-append.cmd "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" 2> NUL || `
-        CALL C:\Tools\HelperScripts\node-path-append.cmd "HKCU\Environment"`
+        CALL C:\Users\Public\Downloads\HelperScripts\node-path-append.cmd "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" 2> NUL || `
+        CALL C:\Users\Public\Downloads\HelperScripts\node-path-append.cmd "HKCU\Environment"`
     ) &&`
-    ERASE C:\Tools\HelperScripts\node-path-append.cmd
-RUN CALL C:\Tools\HelperScripts\node-extra-install.cmd && `
-    CALL C:\Tools\HelperScripts\node-extra-setenv.cmd
+    ERASE C:\Users\Public\Downloads\HelperScripts\node-path-append.cmd
+RUN CALL C:\Users\Public\Downloads\HelperScripts\node-extra-install.cmd && `
+    CALL C:\Users\Public\Downloads\HelperScripts\node-extra-setenv.cmd && `
+    ERASE C:\Users\Public\Downloads\HelperScripts\*.cmd && `
+    RD /S /Q C:\Users\Public\Downloads\HelperScripts
