@@ -8,11 +8,11 @@ REG QUERY "%~1" /v Path 1> NUL 2> NUL || (
     REG ADD "%~1" /v Path /t REG_EXPAND_SZ /d "" 1> NUL
 ) || GOTO ERRORMESSAGE
 
-SET NODE_PATH_APPEND=;%%NPM_CONFIG_PREFIX%%;%%NPM_CONFIG_PREFIX%%\bin;C:\Tools\NodeJs
-FOR /F "tokens=1,2,* delims= " %%A IN ('REG QUERY "%~1" /v Path') DO (
-    IF /I "%%~A"=="Path" (
-        ECHO.Appending "%NODE_PATH_APPEND%" to Path value "%%~C"
-        REG ADD "%~1" /v "%%~A" /t REG_EXPAND_SZ /d "%%~C%NODE_PATH_APPEND%" /f || GOTO ERRORMESSAGE
+SET NODE_PATH_APPEND=;%%APPDATA%%\npm;%%APPDATA%%\npm\bin;C:\Tools\NodeJs
+FOR /F "tokens=1,2,* delims= " %%X IN ('REG QUERY "%~1" /v Path') DO (
+    IF /I "%%~X"=="Path" (
+        ECHO.Appending "%NODE_PATH_APPEND%" to Path value "%%~Z"
+        REG ADD "%~1" /v "%%~X" /t REG_EXPAND_SZ /d "%%~Z%NODE_PATH_APPEND%" /f || GOTO ERRORMESSAGE
     )
 )
 
